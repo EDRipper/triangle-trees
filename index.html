@@ -11,7 +11,7 @@
         
         <div class="container">
             <h2><b>Triangular trees</b></h2> 
-            <p>WOWEEE those trees sure are triangular, and getting pointier by the second. I wonder what the area and surface area is?<br>probably best not to dwell on such questions. Try that windy path! or try find my easter egg!
+            <p>WOWEEE those trees sure are triangular, and getting pointier by the second. I wonder what the area and surface area is?<br>probably best not to dwell on such questions. Try that path! or try find my easter egg!
             </p> 
         </div>
     </div>
@@ -94,6 +94,10 @@
         sierpinski(a, b, c, depth);
     }
     function mouseClicked() {
+        if (mouseX > width*0.8 && mouseX < width*0.9) {
+            alert("the path takes you onward to the something of somethiing!");
+
+        }
         if (mouseX < 150 && mouseY < 150) {
             if (backgroundCol == (0,0,0,40)) {
                 backgroundCol = (51, 72, 134);
@@ -130,7 +134,7 @@
             drawTree(x+treeOffsets[i], baseY + size*0.7, size*1.3, depth);
         }
     }
-        </script>
+    </script>
     </body>
 </html>
 <style>
