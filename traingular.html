@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+            <title>Sierpinski Trees</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+    </head>
+    <body style="margin:0;background:#334886;">
+        <div class="card">
+        
+        <div class="container">
+            <h2><b>Triangular trees</b></h2> 
+            <p>WOWEEE those trees sure are triangular, and getting pointier by the second. I wonder what the area and surface area is?<br>probably best not to dwell on such questions. Try that windy path! or try find my easter egg!
+            </p> 
+        </div>
+    </div>
+    <script>
+        let pathX;
+        let cirCol;
+        let numTrees = screen.width/130;
+        let hillY;
+        let backgroundCol = (51, 72, 134);
+        let offsets = [];
+        let depth = 0; //track current depth
+        let lastUpdate = 0; // timer
+        let maxDepth = 4;
+        let pathHeight = 0;
+        let treeOffsets = []; // for the lower group of trees to look dispersed
+        function setup() {
+            let canvas=createCanvas(windowWidth, windowHeight);
+            noStroke();
+            cirCol=color(255, 255, 0,255);
+            hillY = height * 0.7;
+            for (let i = 0; i < numTrees; i++) {
+                treeOffsets.push(Math.random()*40); 
+            }
+    }
+      
+
+    function makeTriangle(a, b, c) {
+        beginShape();
+        fill(0, 120, 0);
+        vertex(a.x, a.y);
+        vertex(b.x, b.y);
+        vertex(c.x, c.y);
+        endShape(CLOSE);
+    }
+
+    function sierpinski(a, b, c, level) {
+        if (level === 0) {
+            makeTriangle(a, b, c);
+        } else {
+            let ab = p5.Vector.lerp(a, b, 0.5);
+            let bc = p5.Vector.lerp(b, c, 0.5);
+            let ca = p5.Vector.lerp(c, a, 0.5);
+
+            sierpinski(a, ab, ca, level - 1);
+            sierpinski(ab, b, bc, level - 1);
+            sierpinski(ca, bc, c, level - 1);
+        }
+    }
+
+    function drawHill() {
+        fill(0, 80, 0);
+        beginShape();
+        let xoff = 0;
+        vertex(0, height);
+        for (let x = 0; x <= width; x += 10) {
+            let y = hillY - noise(xoff) * 200;
+        if (x > width*0.90 && x < width*99 && pathHeight===0) {
+            pathHeight = y;
+            pathX = x;
+            console.log(pathX, pathHeight);
+            
+        }
+            
+            vertex(x, y);
+            xoff += 0.02;
+        }
+        vertex(width, height);
+        endShape(CLOSE);
+    }
+
+    function drawTree(x, y, size, depth) {
+        // trunk
+        fill(100, 60, 20);
+        rect(x - size * 0.05, y+size, size * 0.1, size * 0.4);
+
+        // leaves
+        let a = createVector(x, y);
+        let b = createVector(x - size / 2, y + size);
+        let c = createVector(x + size / 2, y + size);
+        sierpinski(a, b, c, depth);
+    }
+    function mouseClicked() {
+        if (mouseX < 150 && mouseY < 150) {
+            if (backgroundCol == (0,0,0,40)) {
+                backgroundCol = (51, 72, 134);
+                cirCol=color(255, 255,0,255);
+            } else {
+                cirCol=color(255,255,255,255);
+                backgroundCol = (0,0,0,40);
+            }
+            
+        }
+    }
+    function draw() {
+        background(backgroundCol);
+        fill(cirCol);
+        circle(0,0,150);
+        drawHill();   
+        fill(255, 255, 255);
+        stroke(128, 112, 85)
+        strokeWeight(width/30)
+        line(pathX, height, pathX, pathHeight+width/60);
+        noStroke();
+        if (millis() - lastUpdate > 1000) {
+            depth=(depth+1)%maxDepth;
+            lastUpdate = millis();
+        }
+
+        // draw trees
+        for (let i = 0; i < numTrees; i++) {
+            let x = map(i, 0, numTrees - 1, width * 0.0, width * 0.8);
+            let randomNumber = Math.random();
+            let baseY = hillY - noise(i * 8) * 80;
+            let size = 100 - noise(i * 8) * 80;
+            drawTree(x, baseY - size, size, depth);
+            drawTree(x+treeOffsets[i], baseY + size*0.7, size*1.3, depth);
+        }
+    }
+        </script>
+    </body>
+</html>
+<style>
+.card {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    z-index: 10;
+    background-color: rgb(167, 196, 221);
+    margin: auto;
+    display: flex;
+}
+
+.card:hover {
+    position: absolute;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.container {
+    padding: 2px 16px;
+}
+</style>
